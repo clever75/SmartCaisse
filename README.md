@@ -22,7 +22,7 @@ Les petites structures de microfinance doivent suivre prêts et remboursements a
 
 ## Stack
 
-Java (projet NetBeans configuré pour Java 25) · Swing · FlatLaf · MySQL / MariaDB via JDBC · iText (PDF) · JFreeChart · installeur Inno Setup.
+Java (projet NetBeans configuré pour Java 25) · Swing · FlatLaf · MariaDB / MySQL via JDBC (pilote MariaDB Connector/J) · iText (PDF) · JFreeChart · installeur Inno Setup qui embarque Java et MariaDB.
 
 ## Architecture
 
@@ -34,18 +34,36 @@ src/Utils/    impression PDF et états
 lib/          bibliothèques .jar
 ```
 
+## Essayer l'application (le plus simple)
+
+1. Télécharger `SmartCaisse_Setup_v1.0.exe` dans la page [Releases](https://github.com/clever75/SmartCaisse/releases) et lancer l'installeur (droits administrateur demandés).
+2. L'installeur met en place l'application, **sa propre base MariaDB** (service Windows `SmartCaisseDB`, port 3308, accessible uniquement depuis votre PC), les tables et un compte de démonstration. Rien d'autre à installer.
+3. Lancer SmartCaisse et se connecter avec le compte de démonstration ci-dessous.
+
+## Compte de démonstration
+
+| Identifiant | Mot de passe |
+|-------------|--------------|
+| `demo`      | `demo1234`   |
+
+Compte fictif créé par l'installeur, uniquement pour tester.
+
 ## Installation pour le développement
 
-Prérequis : JDK (la version configurée dans NetBeans est la 25, adapter *Project Properties → Sources → Source/Binary Format* si votre JDK est plus ancien), NetBeans, MySQL ou MariaDB.
+Prérequis : JDK (le projet NetBeans est configuré pour Java 25 ; si votre JDK est plus ancien, adapter *Project Properties → Sources → Source/Binary Format*), NetBeans, MariaDB ou MySQL (XAMPP convient).
 
-1. Créer la base `smartcaisse` puis importer `database/smartcaisse.sql`.
-2. Connexion dans `src/DAO/Connexion.java` (par défaut : `localhost:3306`, `root`, mot de passe vide).
-3. Ouvrir le dossier dans NetBeans, lancer le projet (classe principale `Views.LoginFrame`).
-4. Créer un premier utilisateur actif dans la table `Utilisateur`.
+1. Créer la base `smartcaisse`, puis importer `database/schema.sql` (tables) et `database/seed.sql` (compte de démonstration).
+2. Ouvrir le dossier dans NetBeans et lancer le projet (classe principale `Views.LoginFrame`).
 
-## Utilisation sans développement
+La connexion à la base se règle dans un fichier `config.properties` placé à côté de l'application (jamais envoyé sur GitHub). **Sans ce fichier**, l'application utilise les réglages de développement `localhost:3306`, utilisateur `root`, mot de passe vide (XAMPP). Format du fichier :
 
-Télécharger `SmartCaisse_Setup_v1.0.exe` dans la page [Releases](https://github.com/clever75/SmartCaisse/releases). MySQL doit tourner sur la machine.
+```properties
+db.host=127.0.0.1
+db.port=3306
+db.name=smartcaisse
+db.user=root
+db.password=
+```
 
 ## Ce que j'ai appris
 
@@ -55,8 +73,7 @@ Télécharger `SmartCaisse_Setup_v1.0.exe` dans la page [Releases](https://githu
 
 ## Limites connues et pistes d'amélioration
 
-- Mots de passe stockés en clair : remplacement par BCrypt prévu.
-- Identifiants de base codés en dur dans `Connexion.java` : à externaliser.
+- Les mots de passe des utilisateurs de l'application sont stockés en clair dans la table `Utilisateur` : remplacement par BCrypt prévu.
 - Pas de tests automatisés sur les calculs financiers, qui en auraient pourtant le plus besoin.
 
 ## Contexte
